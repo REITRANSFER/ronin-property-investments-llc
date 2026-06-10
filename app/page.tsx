@@ -77,6 +77,24 @@ export default function HomePage() {
             />
           </div>
 
+          {/* Meet the team — local trust (mirrors iBuyKC) */}
+          <div className="mt-8 md:mt-12 mx-auto max-w-3xl text-center">
+            <p className="text-xs font-semibold uppercase tracking-widest text-white/80">
+              Meet the Ronin team
+            </p>
+            <h2 className="mt-1 text-xl font-extrabold text-white text-balance">
+              The local team helping homeowners sell with confidence
+            </h2>
+            <Image
+              src="/images/ronin_landing.png"
+              alt={`The ${config.companyName} team`}
+              width={1078}
+              height={456}
+              sizes="(max-width: 768px) 100vw, 700px"
+              className="mt-4 h-auto w-full max-w-2xl mx-auto"
+            />
+          </div>
+
           {/* Owner / Founder section — shows when ownerName or headshotUrl is set */}
           {(config.ownerName || config.headshotUrl) && (
             <div className="mt-8 md:mt-12 mx-auto flex flex-col items-center gap-3">
