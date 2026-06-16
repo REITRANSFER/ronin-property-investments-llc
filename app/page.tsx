@@ -19,7 +19,7 @@ export default function HomePage() {
   const disqualifiedPropertyTypes = config.disqualifiedPropertyTypes.split(",").map(s => s.trim()).filter(Boolean)
 
   return (
-    <main className="relative min-h-screen" style={{ backgroundColor: config.accentColor }}>
+    <main className="relative min-h-screen bg-gray-50">
       <div className="relative z-10">
         <Header
           companyName={config.companyName}
