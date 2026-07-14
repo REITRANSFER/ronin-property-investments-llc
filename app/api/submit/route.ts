@@ -62,16 +62,8 @@ export async function POST(request: Request) {
     // Add server IP to payload
     const payload = { ...data, server_ip: ip }
 
-    const webhookUrl = process.env.WEBHOOK_URL
-    if (webhookUrl) {
-      await fetch(webhookUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      })
-    }
-
-    // --- GoFunnel external webhook: forward the lead for gf_sid attribution ---
+    // --- GoFunnel external webhook FIRST: fire before n8n so a slow or failing
+    // n8n webhook can never starve the GoFunnel forward (Vercel function timeout). ---
     try {
       const GF_CREDENTIAL_ID = process.env.GOFUNNEL_WEBHOOK_CREDENTIAL_ID || "ac0f26d0-724e-437b-b8ec-93d2dedb8eea"
       const GF_BEARER = process.env.GOFUNNEL_WEBHOOK_SECRET || "d99f8031-8a6f-4060-957e-7a64ccd90bac"
@@ -131,6 +123,18 @@ export async function POST(request: Request) {
         }).catch(() => {})
       }
     } catch {}
+
+    // Forward to n8n last, non-blocking: timeout + catch so it can never hang the
+    // function or short-circuit the GoFunnel forward above.
+    const webhookUrl = process.env.WEBHOOK_URL
+    if (webhookUrl) {
+      await fetch(webhookUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+        signal: AbortSignal.timeout(8000),
+      }).catch(() => {})
+    }
 
     return NextResponse.json({ success: true })
   } catch {
